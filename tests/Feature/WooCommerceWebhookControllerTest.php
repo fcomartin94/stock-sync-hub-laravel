@@ -70,4 +70,27 @@ class WooCommerceWebhookControllerTest extends TestCase
             'currency' => 'USD',
         ]);
     }
+
+    public function test_it_rejects_a_signed_webhook_whose_payload_has_no_id(): void
+    {
+        config(['services.woocommerce.webhook_secret' => 'test_secret']);
+
+        Store::create([
+            'name' => 'Mythic Books',
+            'platform' => 'woocommerce',
+            'base_url' => 'http://mythicbooks.test',
+        ]);
+
+        $body = json_encode(['status' => 'processing']);
+        $signature = base64_encode(hash_hmac('sha256', $body, 'test_secret', true));
+
+        $response = $this->call('POST', '/api/webhooks/woocommerce', [], [], [], [
+            'HTTP_X-WC-Webhook-Topic' => 'order.updated',
+            'HTTP_X-WC-Webhook-Signature' => $signature,
+            'HTTP_X-WC-Webhook-Source' => 'http://mythicbooks.test',
+            'CONTENT_TYPE' => 'application/json',
+        ], $body);
+
+        $response->assertStatus(422);
+    }
 }

@@ -19,8 +19,18 @@ class Store extends Model
         'last_synced_at',
     ];
 
+    /**
+     * Credentials must never be serialized into API responses.
+     */
+    protected $hidden = [
+        'api_key',
+        'api_secret',
+    ];
+
     protected $casts = [
         'last_synced_at' => 'datetime',
+        'api_key' => 'encrypted',
+        'api_secret' => 'encrypted',
     ];
 
     public function products(): HasMany

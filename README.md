@@ -207,6 +207,17 @@ curl -H "Authorization: Bearer <token>" -H "Accept: application/json" http://loc
 docker compose exec app php artisan test
 ```
 
+## Security notes
+
+- Store credentials (`api_key`, `api_secret`) are hidden from every API response and
+  stored encrypted at rest (Laravel's `encrypted` cast, keyed by `APP_KEY`). A migration
+  encrypts any plaintext credentials already in the database.
+- The WooCommerce webhook is authenticated with an HMAC-SHA256 signature checked with
+  `hash_equals`. It uses a single shared secret (`WOOCOMMERCE_WEBHOOK_SECRET`); a
+  per-store secret is a natural next step if several WooCommerce stores post to the same
+  instance.
+- The sync job retries up to 3 times with backoff before it is marked as failed.
+
 ## Roadmap
 
 - [x] Migrations: `stores`, `products`, `stock_snapshots`, `orders`

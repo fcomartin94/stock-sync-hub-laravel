@@ -19,6 +19,17 @@ class SyncStoreJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /** Remote stores fail transiently (timeouts, 5xx): retry with backoff instead of failing at once. */
+    public int $tries = 3;
+
+    public int $timeout = 120;
+
+    /** @return array<int, int> seconds to wait before each retry */
+    public function backoff(): array
+    {
+        return [30, 120];
+    }
+
     public function __construct(
         public Store $store,
     ) {

@@ -55,6 +55,10 @@ class WooCommerceWebhookController extends Controller
 
     protected function handleOrder(Request $request, array $payload)
     {
+        if (! isset($payload['id'])) {
+            return response()->json(['message' => 'Payload is missing the order id.'], 422);
+        }
+
         $store = $this->resolveStore($request);
 
         if (! $store) {
@@ -79,6 +83,10 @@ class WooCommerceWebhookController extends Controller
 
     protected function handleProduct(Request $request, array $payload)
     {
+        if (! isset($payload['id'])) {
+            return response()->json(['message' => 'Payload is missing the product id.'], 422);
+        }
+
         $store = $this->resolveStore($request);
 
         if (! $store) {
@@ -91,7 +99,7 @@ class WooCommerceWebhookController extends Controller
                 'external_id' => (string) $payload['id'],
             ],
             [
-                'sku' => $payload['sku'] ?: null,
+                'sku' => ($payload['sku'] ?? null) ?: null,
                 'name' => $payload['name'] ?? '',
                 'price' => (float) ($payload['price'] ?? 0),
                 'stock_quantity' => (int) ($payload['stock_quantity'] ?? 0),
