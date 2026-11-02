@@ -215,3 +215,7 @@ docker compose exec app php artisan test
 - [x] Sanctum-authenticated API endpoints (products, stock alerts, orders, manual sync)
 - [x] Test suite (PHPUnit) mocking external APIs with `Http::fake()`
 - [x] WooCommerce webhook receiver with HMAC signature verification
+
+## License
+
+Released under the [MIT License](LICENSE).
